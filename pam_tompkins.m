@@ -75,6 +75,8 @@ plot(Smwi(1:500));
 
 %% Threesholding 
 
+
+
 %% Detection of maxima 
 
 
