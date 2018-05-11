@@ -78,17 +78,10 @@ Smwi=filter(b4, a4, Ssq);
 %% Threesholding
 
 SPKI=zeros(1,length(data));
-NPKI=zeros(1,length(data));
-SPKI(1)=max(Smwi(1:2*Fs));
-NPKI(1)=mean(Smwi(1:2*Fs));
-PEAK=max(Smwi(1));
+
 for j=1:length(data)
-    if(Smwi(j)>PEAK)
-        PEAK=Smwi(j);
-    end
-   SPKI(j+1)=0.125*PEAK+0.875*SPKI(j);
-   NPKI(j+1)=0.125*PEAK+0.875*NPKI(j);
-end
+    
+    SPKI(j+1)=max(Smwi(1:j))+SPKI(j);
 
 %% Detection of maxima 
 
