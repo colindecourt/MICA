@@ -77,6 +77,7 @@ plot(Smwi(1:500));
 
 
 
+
 %% Detection of maxima 
 
 
