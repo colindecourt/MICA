@@ -5,7 +5,7 @@ clc;
 %% Load a signal
 
 
-signal = load('ecg_noisePL.mat');
+signal = load('ecg_normal_1.mat');
 data = signal.ecg;
 Fs = signal.Fs; % Sampling frequency
 
@@ -31,16 +31,9 @@ a2=[1 -1];
 
 Y2=filter(b2,a2,Y1); % signal filtered 
 
-
-% subplot(2,2,1);
-% plot(data(1:500), 'blue');
-% 
-% subplot(2,2,2);
-% plot(Y1(1:500), 'red');
-% 
-% subplot(2,2,3);
 figure(1)
-plot(Y2(1:1000))
+hold on
+plot(Y2(1:500))
 
 
 
@@ -51,55 +44,26 @@ a3=[1]; % the delay of 2 samples is for now ignored
 
 Y3=filter(b3, a3, Y2);
 
-% subplot(2,2,4);
-% plot(Y3(1:500));
-
-
 %% Intensification of local etrema
 
 Ssq = abs(Y3).^2;
-
-% figure(2) 
-% plot(Ssq(1:500));
 
 %% Moving Window Integration
 
 N=30; % average QRS window length
 
-
 b4=1/N.*ones(1,N);
 a4=[1]
-
 Smwi=filter(b4, a4, Ssq);
 
-figure(2)
-hold on
-plot(Smwi);
+
+plot((1/10^8)*Smwi(1:500));
 
 
 %% Threesholding
 
-% Méthode 1 de ne marche pas car seuil adaptafif seulement jusqu'à trouver
-% le premier max %
-
-% SPKI=zeros(1,length(data));
-% NPKI=zeros(1,length(data));
-% SPKI(1)=max(Smwi(1:2*Fs));
-% NPKI(1)=mean(Smwi(1:2*Fs));
 PEAK=max(Smwi(1));
-% for j=1:length(data)
-%     if(Smwi(j)>PEAK)
-%         PEAK=Smwi(j);
-%     end
-%    SPKI(j+1)=0.125*PEAK+0.875*SPKI(j);
-%    NPKI(j+1)=0.125*PEAK+0.875*NPKI(j);
-% end
-% 
-% TRESH1 = NPKI+0.25*(SPKI-NPKI);
-% 
-% TRESH2 = 0.5*TRESH1;
 
-% Méthode 2 %
 for i=1:200:length(data)-200
     [R ,x] = max(Smwi(i:i+200)); % Search the max during a period of 200 samples
     m = mean(Smwi(i:i+200)); %Search the mean to don't detect noise peak (as P wave for example)
@@ -113,8 +77,7 @@ end
 
 TRESH1 = M+0.25*(A-M);
 TRESH2 = 0.5*TRESH1;
-plot(TRESH1);
-plot(TRESH2);
+
 
 % plot(A(50780:51999));
 % plot(M(50780:51999));
