@@ -102,11 +102,10 @@ plot(Smwi(1:500));
 
 for i=1:200
     [R , x] = max(Smwi(1:200));
-    m = mean(Smwi(1:200));
+    [m
 end
 
 plot(x,R,'*');
-plot(m,'x');
 hold off;
 %% Detection of maxima 
 
