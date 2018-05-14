@@ -5,7 +5,7 @@ clc;
 %% Load a signal
 
 
-signal = load('ecg_normal_1.mat');
+signal = load('ecg_noisePL.mat');
 data = signal.ecg;
 Fs = signal.Fs; % Sampling frequency
 
@@ -74,7 +74,8 @@ Smwi=filter(b4, a4, Ssq);
 
 figure(2)
 hold on
-plot(Smwi(1:500));
+plot(Smwi);
+
 
 %% Threesholding
 
@@ -85,7 +86,7 @@ plot(Smwi(1:500));
 % NPKI=zeros(1,length(data));
 % SPKI(1)=max(Smwi(1:2*Fs));
 % NPKI(1)=mean(Smwi(1:2*Fs));
-% PEAK=max(Smwi(1));
+PEAK=max(Smwi(1));
 % for j=1:length(data)
 %     if(Smwi(j)>PEAK)
 %         PEAK=Smwi(j);
@@ -99,14 +100,24 @@ plot(Smwi(1:500));
 % TRESH2 = 0.5*TRESH1;
 
 % Méthode 2 %
-
-for i=1:200
-    [R , x] = max(Smwi(1:200));
-    m = mean(Smwi(1:200));
+for i=1:200:length(data)-200
+    [R ,x] = max(Smwi(i:i+200)); % Search the max during a period of 200 samples
+    m = mean(Smwi(i:i+200)); %Search the mean to don't detect noise peak (as P wave for example)
+    for k=i:i+200
+     A(k) = 0.875*R+0.125*PEAK; 
+     B(k) = x;
+     M(k) = 0.875*m+0.125*PEAK;
+    end
 end
 
-plot(x,R,'*');
-plot(m,'x');
+
+TRESH1 = M+0.25*(A-M);
+TRESH2 = 0.5*TRESH1;
+plot(TRESH1);
+plot(TRESH2);
+
+% plot(A(50780:51999));
+% plot(M(50780:51999));
 hold off;
 %% Detection of maxima 
 
