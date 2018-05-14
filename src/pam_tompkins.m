@@ -77,6 +77,9 @@ Smwi=filter(b4, a4, Ssq);
 
 %% Threesholding
 
+% Méthode 1 de ne marche pas car seuil adaptafif seulement jusqu'à trouver
+% le premier max %
+
 % SPKI=zeros(1,length(data));
 % NPKI=zeros(1,length(data));
 % SPKI(1)=max(Smwi(1:2*Fs));
@@ -93,7 +96,10 @@ Smwi=filter(b4, a4, Ssq);
 % TRESH1 = NPKI+0.25*(SPKI-NPKI);
 % 
 % TRESH2 = 0.5*TRESH1;
- 
+
+% Méthode 2 %
+
+
 %% Detection of maxima 
 
 
