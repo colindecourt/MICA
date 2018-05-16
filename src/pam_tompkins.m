@@ -5,12 +5,12 @@ clc;
 %% Load a signal
 
 
-signal = load('ecg_normal_1.mat');
+signal = load('ecg_noiseBL.mat');
 data = signal.ecg;
 Fs = signal.Fs; % Sampling frequency
 
-%figure(4)
-%plot(data(1:500));
+figure
+plot(data);
 
 
 %% Band-pass filter 
@@ -39,9 +39,9 @@ Y2=filter(b2,a2,Y1); % signal filtered
 
 
 % plot(Y2(1:500));
-figure(1)
-hold on
-plot(Y2(1:500)/max(abs(Y2(1:500)))); % normalized signal 
+
+
+%plot(Y2(1:500)/max(abs(Y2(1:500)))); % normalized signal 
 
 
 %% Differenciation 
@@ -62,10 +62,6 @@ N=30; % average QRS window length
 b4=ones(1,N);
 %a4=[1]
 Smwi=1/N*conv(b4,Ssq);
-
-
-plot(Smwi(1:1000));
-
 %plot(Smwi(17:517)/max(abs(Smwi(17:517)))); % normalized signal
 
 
@@ -88,11 +84,10 @@ end
 TRESH1 = M+0.25*(A-M);
 TRESH2 = 0.5*TRESH1;
 
-plot(TRESH1(1:1000));
-plot(TRESH2(1:1000));
+% plot(TRESH1(1:1000));
+% plot(TRESH2(1:1000));
 %plot(TRESH1(1:500)/max(abs(TRESH1(1:500))), 'yellow'); % normalized tresh
 %plot(TRESH2(1:500)/max(abs(TRESH2(1:500))), 'green'); % normalize tresh
-hold off;
 
 
 delay=38 % delay in samples 
@@ -101,13 +96,43 @@ delay=38 % delay in samples
 
 %% Detection of maxima 
 
-X=[0];
+%Detection of the QRS location
+T=zeros(size(Smwi));
 for i=1:length(TRESH1)
-    if (0.85*TRESH1(i) < Smwi(i) && Smwi(i)< 1.15*TRESH1(i))
-        X=[X,i];
-        
+    if(Smwi(i)>TRESH1(i))
+        T(i)=1;
+    else
+        T(i)=0;
     end
 end
+
+index=[0];
+T1=diff(T);
+for k=1:length(T1)
+    if(abs(T1(k))==1)
+        index=[index,k];
+    end
+end
+index=index(2:end)-delay; %index of QRS location
+
+%R detection 
+R_peak=[0];
+R_peak_abs=[0];
+
+for i=1:2:length(index)
+    temp=max(data(index(i):index(i+1)));
+    R_peak=[R_peak,temp];
+end
+R_peak=R_peak(2:end);
+
+for j=1:length(R_peak)
+    temp1=find(data==R_peak(j));
+    R_peak_abs=[R_peak_abs,temp1];
+end
+R_peak_abs = R_peak_abs(2:end);
+hold on
+plot(R_peak_abs,R_peak,'*');
+    
 
 
 
