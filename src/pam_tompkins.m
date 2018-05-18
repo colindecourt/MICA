@@ -5,7 +5,7 @@ clc;
 %% Load a signal
 
 
-signal = load('ecg_normal_1.mat');
+signal = load('ecg_noiseBL.mat');
 data = signal.ecg;
 Fs = signal.Fs; % Sampling frequency
 
@@ -120,9 +120,17 @@ R_peak=[0];
 R_peak_abs=[0];
 
 for i=1:2:length(index)
+    if (index(i)<0)
+        index(i)=abs(index(i));
+    end
+    
     temp=max(data(index(i):index(i+1)));
     R_peak=[R_peak,temp];
+    
+    
 end
+
+
 R_peak=R_peak(2:end);
 
 for j=1:length(R_peak)
@@ -187,7 +195,7 @@ RR_interval=diff(index_RR_interval); %length of each RR interval
 % T waves detection (we omit the first T wave)
 T_wave_f=0;
 for k=1:length(index_RR_interval)-1
-    T_wave_f=[T_wave_f,max((G2(index_RR_interval(k):(index_RR_interval(k))+floor(0.7*RR_interval(k)))))];
+    T_wave_f=[T_wave_f, max(((G2((index_RR_interval(k)+floor(0.1*RR_interval(k))):(index_RR_interval(k)+floor(0.65*RR_interval(k)))))))];
 end
 
 T_wave_f=T_wave_f(2:end);

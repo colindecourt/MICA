@@ -5,7 +5,7 @@ clc;
 %% Load a signal
 
 
-signal = load('ecg_normal_1.mat');
+signal = load('ecg_PVC.mat');
 data = signal.ecg;
 Fs = signal.Fs; % Sampling frequency
 
@@ -167,8 +167,6 @@ S_peak=data(S_peak_abs);
 
 plot(S_peak_abs,S_peak,'o');
 
-hold off
-
 %% P and T wave detection 
 b5=[1 0 0 0 0 0 -1];
 a5=[1];
@@ -180,9 +178,6 @@ a6=[1 -1];
 
 G2=filter(b6,a6,G1);
 
-figure
-plot(G2(1:500));
-grid on;
 
 delay2 = 6; %the delay is seen in the filtered signal each time the decreasing slope after the R peak crosses the level 0
 
@@ -190,15 +185,15 @@ index_RR_interval=R_peak_abs+6;
 RR_interval=diff(index_RR_interval); %length of each RR interval
 
 % T waves detection (we omit the first T wave)
-T_wave=0;
+T_wave_f=0;
 for k=1:length(index_RR_interval)-1
-    T_wave=[T_wave,max((G2(index_RR_interval(k):(index_RR_interval(k))+floor(0.7*RR_interval(k)))))];
+    T_wave_f=[T_wave_f, max(((G2((index_RR_interval(k)+floor(0.05*RR_interval(k))):(index_RR_interval(k)+floor(0.65*RR_interval(k)))))))];
 end
 
-T_wave=T_wave(2:end);
+T_wave_f=T_wave_f(2:end);
 T_wave_abs=0;
-for j=1:length(T_wave)
-    temp1=find(G2==T_wave(j));
+for j=1:length(T_wave_f)
+    temp1=find(G2==T_wave_f(j));
     T_wave_abs=[T_wave_abs,temp1];
 end
 
@@ -206,16 +201,22 @@ T_wave_abs=T_wave_abs(2:end);
 
 
 % Detection of P waves
-P_wave=0;
+P_wave_f=0;
 for k=1:length(index_RR_interval)-1
-    P_wave=[P_wave,max((G2(index_RR_interval(k)+0,7:(index_RR_interval(k))+floor(0.7*RR_interval(k)))))];
+    P_wave_f=[P_wave_f, max(((G2((index_RR_interval(k)+floor(0.71*RR_interval(k))):(index_RR_interval(k)+floor(0.90*RR_interval(k)))))))];
 end
 
-P_wave=P_wave(2:end);
+P_wave_f=P_wave_f(2:end);
 P_wave_abs=0;
-for j=1:length(T_wave)
-    temp1=find(G2==T_wave(j));
+for j=1:length(P_wave_f)
+    temp1=find(G2==P_wave_f(j));
     P_wave_abs=[P_wave_abs,temp1];
 end
 
 P_wave_abs=P_wave_abs(2:end);
+
+P_wave = data(P_wave_abs);
+T_wave = data(T_wave_abs);
+
+plot(P_wave_abs,P_wave,'o');
+plot(T_wave_abs,T_wave,'o');
