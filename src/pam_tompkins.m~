@@ -215,8 +215,4 @@ end
 
 P_wave_abs=P_wave_abs(2:end);
 
-P_wave = data(P_wave_abs);
-T_wave = data(T_wave_abs);
 
-plot(P_wave_abs,P_wave,'o');
-plot(T_wave_abs,T_wave,'o');
