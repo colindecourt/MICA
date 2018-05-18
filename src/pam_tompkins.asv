@@ -208,13 +208,13 @@ T_wave_abs=T_wave_abs(2:end);
 % Detection of P waves
 P_wave=0;
 for k=1:length(index_RR_interval)-1
-    P_wave=[P_wave, max(((G2((index_RR_interval(k)+floor(0.71*RR_interval(k))):(index_RR_interval(k)+floor(0.90*RR_interval(k)))))))];
+    P_wave=[P_wave,max((G2(index_RR_interval(k)+0,7:(index_RR_interval(k))+floor(0.7*RR_interval(k)))))];
 end
 
 P_wave=P_wave(2:end);
 P_wave_abs=0;
-for j=1:length(P_wave)
-    temp1=find(G2==P_wave(j));
+for j=1:length(T_wave)
+    temp1=find(G2==T_wave(j));
     P_wave_abs=[P_wave_abs,temp1];
 end
 
